@@ -1,9 +1,11 @@
 package com.example.assignment.network;
 
-public class JSONResponse {
-    /*private AndroidVersion[] android;
+import com.example.assignment.model.MovieData;
 
-    public AndroidVersion[] getAndroid() {
-        return android;
-    }*/
+public class JSONResponse {
+    private MovieData[] movieData;
+
+    public MovieData[] getMovieData() {
+        return movieData;
+    }
 }

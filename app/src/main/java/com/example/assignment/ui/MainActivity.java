@@ -8,7 +8,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuItemCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,6 +16,8 @@ import com.example.assignment.model.MovieData;
 import com.example.assignment.network.JSONResponse;
 import com.example.assignment.network.RequestInterface;
 import java.util.ArrayList;
+import java.util.Arrays;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -34,8 +35,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+      //  Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+      //  setSupportActionBar(toolbar);
 
         initViews();
         loadJSON();
@@ -59,9 +60,10 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<JSONResponse> call, Response<JSONResponse> response) {
 
                 JSONResponse jsonResponse = response.body();
-             //   mArrayList = new ArrayList<>(Arrays.asList(jsonResponse.getAndroid()));
-              //  mAdapter = new MovieAdapter(mArrayList);
-             //   mRecyclerView.setAdapter(mAdapter);
+                Log.d("TAG","jsonResponse "+jsonResponse);
+                mArrayList = new ArrayList<>(Arrays.asList(jsonResponse.getMovieData()));
+                mAdapter = new MovieAdapter(mArrayList);
+                mRecyclerView.setAdapter(mAdapter);
             }
 
             @Override
