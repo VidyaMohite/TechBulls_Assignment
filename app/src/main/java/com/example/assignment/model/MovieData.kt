@@ -1,4 +1,9 @@
 package com.example.assignment.model
 
-data class MovieData(val name:String, val year:String, val image:String) {
+import com.google.gson.annotations.SerializedName
+
+data class MovieData(
+    @SerializedName("Title") val name:String? = null,
+    @SerializedName("Year") val year:String? = null,
+    @SerializedName("Poster") val image:String? = null) {
 }

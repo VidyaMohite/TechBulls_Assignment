@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.view.MenuItemCompat;
@@ -13,16 +15,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.assignment.R;
 import com.example.assignment.model.MovieData;
-import com.example.assignment.network.JSONResponse;
-import com.example.assignment.network.RequestInterface;
+import com.example.assignment.network.RetofitClient;
 import java.util.ArrayList;
-import java.util.Arrays;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
       //  setSupportActionBar(toolbar);
 
         initViews();
-        loadJSON();
+        getMovieData();
     }
 
     private void initViews(){
@@ -48,27 +45,21 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
     }
-    private void loadJSON(){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-        RequestInterface request = retrofit.create(RequestInterface.class);
-        Call<JSONResponse> call = request.getJSON();
-        call.enqueue(new Callback<JSONResponse>() {
-            @Override
-            public void onResponse(Call<JSONResponse> call, Response<JSONResponse> response) {
 
-                JSONResponse jsonResponse = response.body();
-                Log.d("TAG","jsonResponse "+jsonResponse);
-                mArrayList = new ArrayList<>(Arrays.asList(jsonResponse.getMovieData()));
-                mAdapter = new MovieAdapter(mArrayList);
-                mRecyclerView.setAdapter(mAdapter);
+    private void getMovieData() {
+        Call<MovieData> call = RetofitClient.getInstance().getMyApi().getMovieData(BASE_URL);
+        call.enqueue(new Callback<MovieData>() {
+            @Override
+            public void onResponse(Call<MovieData> call, Response<MovieData> response) {
+                Log.d("TAG","Response: "+response);
+             //   mArrayList = (ArrayList<MovieData>) response.body();
+              //  mAdapter = new MovieAdapter(mArrayList);
+             //   mRecyclerView.setAdapter(mAdapter);
             }
 
             @Override
-            public void onFailure(Call<JSONResponse> call, Throwable t) {
-                Log.d("Error",t.getMessage());
+            public void onFailure(Call<MovieData> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }
