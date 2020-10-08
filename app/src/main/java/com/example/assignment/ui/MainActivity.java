@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.view.MenuItemCompat;
@@ -15,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.assignment.R;
 import com.example.assignment.model.MovieData;
+import com.example.assignment.model.Search;
 import com.example.assignment.network.RetofitClient;
 import java.util.ArrayList;
 import retrofit2.Call;
@@ -32,9 +32,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-      //  Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-      //  setSupportActionBar(toolbar);
-
         initViews();
         getMovieData();
     }
@@ -47,18 +44,18 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getMovieData() {
-        Call<MovieData> call = RetofitClient.getInstance().getMyApi().getMovieData(BASE_URL);
-        call.enqueue(new Callback<MovieData>() {
+        Call<Search> call = RetofitClient.getInstance().getMyApi().getMovieData("batman","39a839a4");
+        call.enqueue(new Callback<Search>() {
             @Override
-            public void onResponse(Call<MovieData> call, Response<MovieData> response) {
+            public void onResponse(Call<Search> call, Response<Search> response) {
                 Log.d("TAG","Response: "+response);
-             //   mArrayList = (ArrayList<MovieData>) response.body();
-              //  mAdapter = new MovieAdapter(mArrayList);
-             //   mRecyclerView.setAdapter(mAdapter);
+                mArrayList = (ArrayList<MovieData>) response.body().getMovieData();
+                mAdapter = new MovieAdapter(mArrayList,getApplicationContext());
+                mRecyclerView.setAdapter(mAdapter);
             }
 
             @Override
-            public void onFailure(Call<MovieData> call, Throwable t) {
+            public void onFailure(Call<Search> call, Throwable t) {
                 Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
@@ -66,9 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         getMenuInflater().inflate(R.menu.menu_main, menu);
-
         MenuItem search = menu.findItem(R.id.search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(search);
         search(searchView);
@@ -77,22 +72,18 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-
         return super.onOptionsItemSelected(item);
     }
 
     private void search(SearchView searchView) {
-
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-
                 mAdapter.getFilter().filter(newText);
                 return true;
             }
